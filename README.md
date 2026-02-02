@@ -1,62 +1,240 @@
 # Enable OpenClaw Feishu Lark
 
-本项目能够激活飞书的长连接功能，通过 WebSocket 与飞书开放平台建立持久连接，实时接收事件消息。
+<p align="center">
+  <strong>🔗 飞书长连接客户端 - 快速接入飞书事件推送</strong>
+</p>
 
-## 功能特点
+<p align="center">
+  <a href="#功能特点">功能特点</a> •
+  <a href="#快速开始">快速开始</a> •
+  <a href="#配置说明">配置说明</a> •
+  <a href="#事件处理">事件处理</a> •
+  <a href="#常见问题">常见问题</a>
+</p>
 
-- 🚀 **快速接入** - 5分钟即可完成配置
-- 🔒 **安全传输** - 内置加密和鉴权，无需额外配置
-- 📡 **实时通信** - 基于 WebSocket 的全双工通道
-- 🔧 **简单易用** - 无需公网IP或域名，本地环境即可运行
+---
 
-## 快速开始
+## 📖 项目介绍
 
-### 1. 安装依赖
+本项目能够激活飞书的**长连接功能**，通过 WebSocket 与飞书开放平台建立持久的全双工通信通道，实时接收事件消息。
+
+相较于传统的 Webhook 模式，长连接模式大大降低了接入成本，将原先 1 周左右的开发周期降低到 **5 分钟**。
+
+### 什么是长连接？
+
+长连接是飞书 SDK 内提供的能力，它允许你的本地服务器与飞书开放平台建立一条 WebSocket 全双工通道。当应用订阅的事件发生时，飞书会通过该通道向你的服务器即时发送事件消息。
+
+---
+
+## ✨ 功能特点
+
+| 特点 | 描述 |
+|------|------|
+| 🚀 **快速接入** | 5分钟即可完成配置，无需复杂的服务器部署 |
+| 🔒 **安全传输** | 内置加密和鉴权机制，数据传输安全可靠 |
+| 🌐 **无需公网** | 无需提供公网 IP 或域名，本地环境即可运行 |
+| 📡 **实时通信** | 基于 WebSocket 的全双工通道，消息即时到达 |
+| 🔧 **开箱即用** | 无需配置内网穿透、防火墙或白名单 |
+
+---
+
+## 🚀 快速开始
+
+### 前置条件
+
+- Node.js 16.0 或更高版本
+- npm 或 yarn 包管理器
+- 飞书开发者账号和企业自建应用
+
+### 1. 克隆项目
+
+```bash
+git clone https://github.com/Futaoj/enable_openclaw_feishu_lark.git
+cd enable_openclaw_feishu_lark
+```
+
+### 2. 安装依赖
 
 ```bash
 npm install
 ```
 
-### 2. 配置应用凭证
+### 3. 配置环境变量
 
-编辑 `src/ws-client.js`，填入你的应用凭证：
+在运行之前，需要设置飞书应用的凭证：
 
-```javascript
-const baseConfig = {
-  appId: 'YOUR_APP_ID',
-  appSecret: 'YOUR_APP_SECRET'
-};
+```bash
+export FEISHU_APP_ID="your_app_id"
+export FEISHU_APP_SECRET="your_app_secret"
 ```
 
-### 3. 启动长连接客户端
+> 💡 **获取应用凭证**：登录 [飞书开发者后台](https://open.feishu.cn/app)，在应用详情页的「凭证与基础信息」>「应用凭证」区域获取。
+
+### 4. 启动长连接客户端
 
 ```bash
 npm run ws
+# 或
+npm start
 ```
 
-### 4. 配置飞书开发者后台
+成功启动后，你将看到类似以下输出：
+
+```
+🚀 正在启动飞书长连接客户端...
+📱 App ID: cli_xxxxx...
+[info]: [ 'client ready' ]
+[debug]: [ '[ws]', 'ws connect success' ]
+[info]: [ '[ws]', 'ws client ready' ]
+✅ 长连接客户端已启动，等待事件...
+```
+
+### 5. 配置飞书开发者后台
 
 1. 登录 [飞书开发者后台](https://open.feishu.cn/app)
-2. 进入应用 → **事件与回调** → **事件配置**
-3. 订阅方式选择：**使用长连接接收事件**
-4. 添加事件订阅（如 `im.message.receive_v1`）
+2. 选择你的企业自建应用
+3. 进入 **事件与回调** > **事件配置** 页面
+4. 在「订阅方式」处选择：**使用长连接接收事件**
+5. 点击「添加事件」，订阅你需要的事件（如 `im.message.receive_v1`）
+6. 保存配置
 
-## 项目结构
+> ⚠️ **重要**：必须确保本地客户端启动正常，有长连接在线的情况下，才能保存成功。
+
+---
+
+## 📁 项目结构
 
 ```
+enable_openclaw_feishu_lark/
 ├── src/
 │   └── ws-client.js    # 长连接客户端主程序
-├── package.json
-└── README.md
+├── package.json        # 项目配置和依赖
+├── package-lock.json   # 依赖锁定文件
+├── .gitignore          # Git 忽略配置
+└── README.md           # 项目说明文档
 ```
 
-## 注意事项
+---
 
-- 仅支持企业自建应用
-- 收到消息后需在 3 秒内处理完成
-- 每个应用最多建立 50 个连接
-- 多客户端部署时，只有随机一个客户端会收到消息
+## ⚙️ 配置说明
 
-## 许可证
+### 环境变量
 
-MIT
+| 变量名 | 必填 | 描述 |
+|--------|------|------|
+| `FEISHU_APP_ID` | ✅ | 飞书应用的 App ID |
+| `FEISHU_APP_SECRET` | ✅ | 飞书应用的 App Secret |
+
+### 使用 .env 文件（推荐）
+
+你也可以创建 `.env` 文件来管理环境变量：
+
+```bash
+# .env
+FEISHU_APP_ID=cli_xxxxxxxxxxxxx
+FEISHU_APP_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+然后安装 `dotenv` 并在代码开头添加：
+
+```javascript
+import 'dotenv/config';
+```
+
+---
+
+## 📬 事件处理
+
+### 默认处理的事件
+
+本项目默认处理 `im.message.receive_v1`（接收消息）事件，会自动回复收到的文本消息。
+
+### 添加更多事件处理器
+
+在 `src/ws-client.js` 的 `eventDispatcher.register()` 中添加更多事件处理器：
+
+```javascript
+eventDispatcher: new Lark.EventDispatcher({}).register({
+  // 接收消息事件
+  'im.message.receive_v1': async (data) => {
+    // 处理消息...
+  },
+  
+  // 群成员增加事件
+  'im.chat.member.user.added_v1': async (data) => {
+    console.log('新成员加入群聊:', data);
+  },
+  
+  // 审批任务状态变化事件
+  'approval.approval.updated_v4': async (data) => {
+    console.log('审批状态更新:', data);
+  }
+})
+```
+
+### 常用事件类型
+
+| 事件类型 | 描述 |
+|----------|------|
+| `im.message.receive_v1` | 接收消息 |
+| `im.message.message_read_v1` | 消息已读 |
+| `im.chat.member.user.added_v1` | 用户进群 |
+| `im.chat.member.user.deleted_v1` | 用户出群 |
+| `im.chat.disbanded_v1` | 群解散 |
+
+更多事件请参考 [飞书事件列表](https://open.feishu.cn/document/ukTMukTMukTM/uYDNxYjL2QTM24iN0EjN/event-list)。
+
+---
+
+## ⚠️ 注意事项
+
+1. **仅支持企业自建应用** - 商店应用暂不支持长连接模式
+2. **3秒处理时限** - 收到消息后需在 3 秒内处理完成，否则会触发超时重推
+3. **连接数限制** - 每个应用最多建立 50 个连接
+4. **集群模式** - 多客户端部署时，只有随机一个客户端会收到消息（不支持广播）
+
+---
+
+## ❓ 常见问题
+
+### Q: 启动时提示"缺少必要的环境变量"？
+
+A: 请确保已正确设置环境变量：
+```bash
+export FEISHU_APP_ID="your_app_id"
+export FEISHU_APP_SECRET="your_app_secret"
+```
+
+### Q: 开发者后台保存订阅方式失败？
+
+A: 必须确保本地客户端已启动且连接成功后，才能在后台保存「使用长连接接收事件」的配置。
+
+### Q: 为什么收不到事件消息？
+
+A: 请检查：
+1. 是否在开发者后台正确订阅了对应事件
+2. 应用是否有对应的权限
+3. 长连接是否正常建立（查看控制台日志）
+
+### Q: 如何在生产环境部署？
+
+A: 可以使用 PM2 进行进程管理：
+```bash
+npm install -g pm2
+pm2 start src/ws-client.js --name feishu-ws
+```
+
+---
+
+## 📄 许可证
+
+MIT License
+
+---
+
+## 🔗 相关链接
+
+- [飞书开放平台](https://open.feishu.cn/)
+- [飞书开发者后台](https://open.feishu.cn/app)
+- [飞书 SDK 文档](https://open.feishu.cn/document/ukTMukTMukTM/uETO1YjLxkTN24SM5UjN)
+- [事件订阅配置指南](https://open.feishu.cn/document/ukTMukTMukTM/uYDNxYjL2QTM24iN0EjN/event-subscription-configure-/use-long-connection-to-receive-events)

@@ -1,14 +1,31 @@
 /**
  * 飞书长连接客户端
  * 使用 WebSocket 与飞书开放平台建立长连接，接收事件推送
+ * 
+ * 环境变量配置：
+ * - FEISHU_APP_ID: 飞书应用的 App ID
+ * - FEISHU_APP_SECRET: 飞书应用的 App Secret
  */
 
 import * as Lark from '@larksuiteoapi/node-sdk';
 
+// 从环境变量获取应用凭证
+const appId = process.env.FEISHU_APP_ID;
+const appSecret = process.env.FEISHU_APP_SECRET;
+
+// 验证环境变量
+if (!appId || !appSecret) {
+    console.error('❌ 错误: 缺少必要的环境变量');
+    console.error('请设置以下环境变量后再运行:');
+    console.error('  export FEISHU_APP_ID="your_app_id"');
+    console.error('  export FEISHU_APP_SECRET="your_app_secret"');
+    process.exit(1);
+}
+
 // 应用凭证配置
 const baseConfig = {
-    appId: 'cli_a9f63a5b6d3adbc7',
-    appSecret: 'bPAPjlq56b7H5GsD7bDOme2ObjV8NBAD'
+    appId,
+    appSecret
 };
 
 // 创建 API Client（用于调用 API）
@@ -20,8 +37,8 @@ const wsClient = new Lark.WSClient({
     loggerLevel: Lark.LoggerLevel.debug  // 设置日志级别为 debug，方便调试
 });
 
-console.log('正在启动飞书长连接客户端...');
-console.log(`App ID: ${baseConfig.appId}`);
+console.log('🚀 正在启动飞书长连接客户端...');
+console.log(`📱 App ID: ${appId.substring(0, 10)}...`);
 
 // 启动长连接
 wsClient.start({
@@ -29,23 +46,23 @@ wsClient.start({
     eventDispatcher: new Lark.EventDispatcher({}).register({
         // 处理「接收消息」事件 (im.message.receive_v1)
         'im.message.receive_v1': async (data) => {
-            console.log('========== 收到新消息 ==========');
+            console.log('========== 📨 收到新消息 ==========');
             console.log('事件数据:', JSON.stringify(data, null, 2));
 
             const {
                 message: { chat_id, content, message_id, message_type }
             } = data;
 
-            console.log(`Chat ID: ${chat_id}`);
-            console.log(`Message ID: ${message_id}`);
-            console.log(`Message Type: ${message_type}`);
-            console.log(`Content: ${content}`);
+            console.log(`💬 Chat ID: ${chat_id}`);
+            console.log(`📋 Message ID: ${message_id}`);
+            console.log(`📝 Message Type: ${message_type}`);
+            console.log(`📄 Content: ${content}`);
 
             // 如果是文本消息，可以进行自动回复
             if (message_type === 'text') {
                 try {
                     const textContent = JSON.parse(content);
-                    console.log(`收到文本消息: ${textContent.text}`);
+                    console.log(`✉️ 收到文本消息: ${textContent.text}`);
 
                     // 发送回复消息
                     const response = await client.im.v1.message.create({
@@ -61,13 +78,13 @@ wsClient.start({
                         }
                     });
 
-                    console.log('回复发送成功:', response);
+                    console.log('✅ 回复发送成功:', response);
                 } catch (error) {
-                    console.error('处理消息或发送回复时出错:', error);
+                    console.error('❌ 处理消息或发送回复时出错:', error);
                 }
             }
 
-            console.log('================================');
+            console.log('====================================');
         },
 
         // 可以添加更多事件处理器，例如：
@@ -77,5 +94,5 @@ wsClient.start({
     })
 });
 
-console.log('长连接客户端已启动，等待事件...');
-console.log('提示: 在飞书开发者后台 > 事件与回调 > 事件配置 中选择「使用长连接接收事件」');
+console.log('✅ 长连接客户端已启动，等待事件...');
+console.log('💡 提示: 在飞书开发者后台 > 事件与回调 > 事件配置 中选择「使用长连接接收事件」');
