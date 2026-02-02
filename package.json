@@ -1,0 +1,23 @@
+{
+  "name": "enable-openclaw-feishu-lark",
+  "version": "1.0.0",
+  "description": "本项目能够激活飞书的长连接功能",
+  "main": "src/ws-client.js",
+  "type": "module",
+  "scripts": {
+    "ws": "node src/ws-client.js",
+    "start": "node src/ws-client.js"
+  },
+  "dependencies": {
+    "@larksuiteoapi/node-sdk": "^1.36.1"
+  },
+  "keywords": [
+    "feishu",
+    "lark",
+    "websocket",
+    "long-connection",
+    "openclaw"
+  ],
+  "author": "",
+  "license": "MIT"
+}
